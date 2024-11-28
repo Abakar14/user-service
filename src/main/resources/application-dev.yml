@@ -1,0 +1,58 @@
+spring:
+  datasource:
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 5
+    url: jdbc:postgresql://${POSTGRES_DEV_HOST}:${POSTGRES_DEV_PORT}/${AUTH_SERVICE_DEV_DB}
+    username: ${POSTGRES_DEV_USER}
+    password: ${POSTGRES_DEV_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  servlet:
+    multipart:
+      enabled: true
+  main:
+    allow-bean-definition-overriding: true
+server:
+  port: 8088
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_DEV_HOST}:${EUREKA_DEV_PORT}/eureka/
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    display-operation-id: false
+    operations-sorter: method
+    display-request-duration: true
+
+
+app:
+  properties:
+    initData:
+      initialize: true
+    dateFormat:
+      yearFirst: "yyyy-MM-dd"
+      dayFirst: "dd.MM.yyyy"
+
+
+# Secret key
+jwt:
+  secret:
+    key: 8KvVu4Bn2KwBNX1MdnXY6VaRVLekVxurk3aaJxnzdCuZL6AHEL0EnnAOYLZtHWUr
+  access:
+    token:
+      expiration: 1800000 # 30 min in milliseconds for token expiration time
+  refresh:
+    token:
+      expiration: 604800000 # 7 days in milliseconds
+logging:
+  level:
+    org:
+      hibernate:
+        sql: debug
+        type: trace
+  root: DEBUG
