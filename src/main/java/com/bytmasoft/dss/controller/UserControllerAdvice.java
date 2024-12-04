@@ -9,6 +9,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -19,6 +20,16 @@ public class UserControllerAdvice {
 
     private Logger logger = LoggerFactory.getLogger(UserControllerAdvice.class);
 
+
+@ExceptionHandler(MethodArgumentNotValidException.class)
+public ResponseEntity<DSSErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
+    logger.error("An error occurred: {}", ex.getMessage(), ex);
+    String path = request.getDescription(false); // URL and query string
+
+    DSSErrorResponse errorResponse = customErrorResponse(HttpStatus.BAD_REQUEST.value(), "Access Denied",
+            "Access of student service denied " + path);
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+}
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<DSSErrorResponse> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {

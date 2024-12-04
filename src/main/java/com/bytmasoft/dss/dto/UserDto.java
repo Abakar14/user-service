@@ -38,6 +38,7 @@ private LocalDateTime addedOn;
 private LocalDateTime modifiedOn;
 private String addedBy;
 private String modifiedBy;
+private boolean deleted;
 
 
 

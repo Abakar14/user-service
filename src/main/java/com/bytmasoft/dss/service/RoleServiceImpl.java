@@ -2,6 +2,7 @@ package com.bytmasoft.dss.service;
 
 import com.bytmasoft.common.exception.DSSEntityNotFoundException;
 import com.bytmasoft.dss.dto.RoleCreateDto;
+import com.bytmasoft.dss.dto.RoleDetailsDto;
 import com.bytmasoft.dss.dto.RoleDto;
 import com.bytmasoft.dss.dto.RoleUpdateDto;
 import com.bytmasoft.dss.entities.Permission;
@@ -34,12 +35,17 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDto add(RoleCreateDto roleCreateDto) {
-        Role role = roleMapper.dtoCreateToEntity(roleCreateDto);
-        role.setAddedBy(authUtils.getUsername());
 
+        Role role = roleMapper.dtoCreateToEntity(roleCreateDto);
+        if(roleCreateDto.getParent_role_id() != null && roleCreateDto.getParent_role_id() > 0) {
+            Role parentRole = findRoleById(roleCreateDto.getParent_role_id());
+            role.setParentRole(parentRole);
+        }
+
+        role.setAddedBy(authUtils.getUsername());
         role.setName("ROLE_"+role.getName().toUpperCase());
         Role savedRole = roleRepository.save(role);
-        return roleMapper.entityToDto(savedRole);
+        return roleMapper.toRoleDto(savedRole);
     }
 
     @Override
@@ -50,18 +56,18 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Page<RoleDto> findAllByActiveStatus(boolean active, Pageable pageable) {
-        return roleRepository.findAll(RoleSpecification.hasActive(active), pageable).map(roleMapper::entityToDto);
+        return roleRepository.findAll(RoleSpecification.hasActive(active), pageable).map(roleMapper::toRoleDto);
     }
 
     @Override
     public List<RoleDto> findAllAsList() {
-        return roleRepository.findAll().stream().map(roleMapper::entityToDto).collect(Collectors.toList());
+        return roleRepository.findAll().stream().map(roleMapper::toRoleDto).collect(Collectors.toList());
 
     }
 
     @Override
     public RoleDto findById(Long id) throws DSSEntityNotFoundException {
-        return roleMapper.entityToDto(findRoleById(id));
+        return roleMapper.toRoleDto(findRoleById(id));
 
     }
 private Role findRoleById(Long id){
@@ -70,16 +76,16 @@ private Role findRoleById(Long id){
 }
     @Override
     public RoleDto update(Long id, RoleUpdateDto roleUpdateDto) {
-        Role roleToUpdate = roleMapper.dtoToEntity(findById(id));
+        Role roleToUpdate = roleMapper.toRole(findById(id));
            Role roleToSave = roleMapper.partialUpdate(roleUpdateDto, roleToUpdate);
-        return roleMapper.entityToDto(roleRepository.save(roleToSave));
+        return roleMapper.toRoleDto(roleRepository.save(roleToSave));
     }
 
     @Override
     public RoleDto delete(Long id) {
-        Role roleToDelete = roleMapper.dtoToEntity(findById(id));
+        Role roleToDelete = roleMapper.toRole(findById(id));
         roleRepository.delete(roleToDelete);
-        return roleMapper.entityToDto(roleToDelete);
+        return roleMapper.toRoleDto(roleToDelete);
     }
 
 
@@ -91,7 +97,7 @@ private Role findRoleById(Long id){
         role.getPermissions().add(authority);
 
 
-        return  roleMapper.entityToDto(roleRepository.save(role));
+        return  roleMapper.toRoleDto(roleRepository.save(role));
 
     }
 
@@ -122,7 +128,7 @@ private Role findRoleById(Long id){
         Role role = findRoleById(id);
         role.setIsActive(true);
         role.setModifiedBy(authUtils.getUsername());
-        return roleMapper.entityToDto(roleRepository.save(role));
+        return roleMapper.toRoleDto(roleRepository.save(role));
     }
 
 
@@ -130,7 +136,7 @@ private Role findRoleById(Long id){
         Role role = findRoleById(id);
         role.setIsActive(false);
         role.setModifiedBy(authUtils.getUsername());
-        return roleMapper.entityToDto(roleRepository.save(role));
+        return roleMapper.toRoleDto(roleRepository.save(role));
 
     }
 
@@ -139,7 +145,7 @@ private Role findRoleById(Long id){
         Role role = findRoleById(id);
         role.setDeleted(true);
         role.setModifiedBy(authUtils.getUsername());
-        return roleMapper.entityToDto(roleRepository.save(role));
+        return roleMapper.toRoleDto(roleRepository.save(role));
     }
 
 
@@ -152,5 +158,12 @@ private Role findRoleById(Long id){
         return authorityRepository.count(PermissionSpecification.hasActive(false));
     }
 
+    public RoleDto findRoleByName(String name) {
+        return roleMapper.toRoleDto(roleRepository.findByName(name));
+    }
+
+public RoleDetailsDto findRoleDetailsById(Long id) {
+    return roleMapper.toRoleDetails(findRoleById(id));
+}
 
 }

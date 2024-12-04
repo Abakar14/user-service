@@ -8,14 +8,14 @@ import com.bytmasoft.dss.dto.PermissionUpdateDto;
 import com.bytmasoft.dss.dto.RoleCreateDto;
 
 
-public interface AuthorityService extends ServiceApi<PermissionDto, PermissionCreateDto, PermissionUpdateDto> {
+public interface PermissionService extends ServiceApi<PermissionDto, PermissionCreateDto, PermissionUpdateDto> {
 
-    PermissionDto addAutorityToRole(Long groupId, Long roleId);
-    PermissionDto addAutorityToRole(Long groupId, RoleCreateDto roleCreateDto);
+    PermissionDto addPermissionToRole(Long groupId, Long roleId);
+    PermissionDto addPermissionToRole(Long groupId, RoleCreateDto roleCreateDto);
 
     Long countActiveAuthorities();
 
-    Long countAuthorities();
+    Long countPermissions();
 
     Long countLockedAuthorities();
 

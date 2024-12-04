@@ -37,7 +37,6 @@ public class User extends BaseEntity implements Serializable {
     @Column(unique = true, nullable = false)
     private String username;
 
-
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -47,12 +46,6 @@ public class User extends BaseEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
-
-/*    @Builder.Default
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private Set<Role> roles = new HashSet<>();*/
 
     @Builder.Default
     @Column(columnDefinition = "Boolean default false")

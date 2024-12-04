@@ -1,7 +1,9 @@
 package com.bytmasoft.dss.controller;
 
+import com.bytmasoft.common.controller.DSSCrud;
 import com.bytmasoft.common.exception.DSSEntityNotFoundException;
 import com.bytmasoft.dss.dto.RoleCreateDto;
+import com.bytmasoft.dss.dto.RoleDetailsDto;
 import com.bytmasoft.dss.dto.RoleDto;
 import com.bytmasoft.dss.dto.RoleUpdateDto;
 import com.bytmasoft.dss.repository.RoleRepository;
@@ -15,9 +17,9 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,87 +30,90 @@ import java.util.List;
 @Tag(name = "Role", description = "The Role Controller  used for add Role to user")
 @RequestMapping(value = "/roles", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
-public class RoleController implements  RoleApi {
+public class RoleController implements DSSCrud<RoleDto, RoleCreateDto, RoleUpdateDto> {
 
-    private final RoleServiceImpl roleService;
-    private final RoleRepository roleRepository;
+private final RoleServiceImpl roleService;
+private final RoleRepository roleRepository;
 
-    @Override
-    public ResponseEntity<RoleDto> save(@Valid RoleCreateDto roleCreateDto) {
-        System.out.println("Role : "+roleCreateDto.toString());
-        return ResponseEntity.ok(roleService.add(roleCreateDto));
-    }
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public ResponseEntity<RoleDto> save(@Valid RoleCreateDto roleCreateDto) {
+	return ResponseEntity.ok(roleService.add(roleCreateDto));
+}
+
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public List<RoleDto> findList() {
+	return roleService.findAllAsList();
+}
+
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public ResponseEntity<RoleDto> findById(Long id) throws DSSEntityNotFoundException {
+	return ResponseEntity.ok(roleService.findById(id));
+}
+
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@GetMapping({"/{id}/details"})
+public ResponseEntity<RoleDetailsDto> findRoleDetailsById(@PathVariable Long id) throws DSSEntityNotFoundException {
+	return ResponseEntity.ok(roleService.findRoleDetailsById(id));
+}
+
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public ResponseEntity<RoleDto> update(Long id, @Valid RoleUpdateDto roleUpdateDto) throws DSSEntityNotFoundException {
+	return ResponseEntity.ok(roleService.update(id, roleUpdateDto));
+}
+
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public ResponseEntity<RoleDto> delete(Long id) throws DSSEntityNotFoundException {
+	return ResponseEntity.ok(roleService.delete(id));
+}
+
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@PostMapping("{role_id}/permissions/{permission_id}")
+ResponseEntity<RoleDto> addPermissionToRole(@PathVariable Long role_id , @PathVariable Long permission_id){
+	return ResponseEntity.ok(roleService.addAuthorityToRole(role_id, permission_id));
+}
 
 
-    @Override
-    public List<RoleDto> findList() {
-        return  roleService.findAllAsList();
-    }
 
 
-    @Override
-    public ResponseEntity<RoleDto> findById(Long id) throws DSSEntityNotFoundException {
-        return ResponseEntity.ok(roleService.findById(id));
-    }
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public ResponseEntity<RoleDto> unlock(Long aLong) throws DSSEntityNotFoundException {
+	return null;
+}
 
-    @Override
-    public ResponseEntity<RoleDto> update(Long id, @Valid RoleUpdateDto roleUpdateDto) throws DSSEntityNotFoundException {
-        return ResponseEntity.ok(roleService.update(id, roleUpdateDto));
-    }
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public ResponseEntity<RoleDto> lockout(Long aLong) throws DSSEntityNotFoundException {
+	return null;
+}
 
-    @Override
-    public ResponseEntity<RoleDto> delete(Long id) throws DSSEntityNotFoundException {
-        return ResponseEntity.ok(roleService.delete(id));
-    }
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public ResponseEntity<RoleDto> markfordeletion(Long aLong) throws DSSEntityNotFoundException {
+	return null;
+}
 
-    @Override
-    public ResponseEntity<RoleDto> addAuthorityToRole(Long role_id, Long authority_id) {
-        return ResponseEntity.ok(roleService.addAuthorityToRole(role_id, authority_id));
-    }
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public Long countAll() {
+	return roleRepository.count();
+}
 
-   /* @Override
-    public Long countAllRoles() {
-        return roleService.countRoles();
-    }
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public Long countAllActives() {
+	return roleService.countActiveRoles();
+}
 
-    @Override
-    public Long countAllActiveRoles() {
-        return roleService.countActiveRoles();
-    }
-
-    @Override
-    public Long countAllLockedRoles() {
-        return roleService.countLockedRoles();
-    }*/
-
-    @Override
-    public ResponseEntity<RoleDto> unlock(Long aLong) throws DSSEntityNotFoundException {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<RoleDto> lockout(Long aLong) throws DSSEntityNotFoundException {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<RoleDto> markfordeletion(Long aLong) throws DSSEntityNotFoundException {
-        return null;
-    }
-
-    @Override
-    public Long countAll() {
-        return roleRepository.count();
-    }
-
-    @Override
-    public Long countAllActives() {
-        return roleService.countActiveRoles();
-    }
-
-    @Override
-    public Long countAllLocked() {
-        return roleService.countLockedRoles();
-    }
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@Override
+public Long countAllLocked() {
+	return roleService.countLockedRoles();
+}
 
 }

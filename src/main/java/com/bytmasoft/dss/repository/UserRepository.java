@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -28,4 +29,5 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query(value = "SELECT u FROM User u JOIN users_roles ur ON u.id = ur.user_id join roles r on r.id = ur.role_id  WHERE r.name=:name ", nativeQuery = true)
     List<User> findStudentsByRoleName(@Param("name") long name);
 
+    Optional<User> findByEmail(String email);
 }

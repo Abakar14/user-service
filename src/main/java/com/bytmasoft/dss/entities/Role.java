@@ -2,6 +2,7 @@ package com.bytmasoft.dss.entities;
 
 
 import com.bytmasoft.common.entities.BaseEntity;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,16 +20,19 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Roles")
+@Table(name = "roles")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Role extends BaseEntity implements Serializable {
 
 
 @Builder.Default
-@OneToMany(mappedBy = "parentRole", cascade = CascadeType.ALL, orphanRemoval = true)
+@OneToMany(mappedBy = "parentRole", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+@JsonManagedReference
 private Set<Role> childRoles = new HashSet<>();
 
 @ManyToOne
 @JoinColumn(name = "parent_role_id")
+@JsonBackReference
 private Role parentRole;
 
 @Column(unique = true, nullable = false)
@@ -41,13 +45,6 @@ private String description;
 @Builder.Default
 @Column(columnDefinition = "Boolean default false")
 private boolean deleted = false;
-
-
-
-/*@Builder.Default
-@ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
-private Set<User> users = new HashSet<>();*/
-
 
 @Builder.Default
 @ManyToMany(fetch = FetchType.EAGER)

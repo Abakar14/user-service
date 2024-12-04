@@ -7,26 +7,25 @@ import com.bytmasoft.dss.dto.UserUpdateDto;
 import com.bytmasoft.dss.entities.User;
 import org.mapstruct.*;
 
-@Mapper (unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+import java.util.List;
+
+@Mapper (componentModel = "spring", uses = {RoleMapper.class})
 public interface UserMapper {
 
+    @Mapping(target = "role", source = "role")
+    UserDto toUserDto(User user);
 
-    User dtoToEntity(UserDto var1);
+    @Mapping(target = "role", source = "role")
+    User toUser(UserDto userDto);
 
-    User dtoCreateToEntity(UserCreateDto var1);
+    List<UserDto> toUserDtos(List<User> users);
 
+    List<User> toUsers(List<UserDto> userDtos);
 
-   // @Mapping(target = "roles", source = "roles", qualifiedByName = "roleSet")
-    UserDto entityToDto(User var1);
+    User dtoCreateToEntity(UserCreateDto userCreateDto);
 
-
-
-    @BeanMapping(
-            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-    )
-    User partialUpdate(UserUpdateDto var1, @MappingTarget User var2);
-
-
-
+    @Mapping(target = "id", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    User partialUpdate(UserUpdateDto userUpdateDto, @MappingTarget User user);
 
 }

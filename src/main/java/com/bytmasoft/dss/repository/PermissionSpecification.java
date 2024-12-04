@@ -7,7 +7,7 @@ public class PermissionSpecification {
 
     public static Specification<Permission> hasActive(boolean active) {
         return (root, query, cb) -> {
-            return   cb.equal(root.get("active"), active);
+            return   cb.equal(root.get("isActive"), active);
         };
     }
 }

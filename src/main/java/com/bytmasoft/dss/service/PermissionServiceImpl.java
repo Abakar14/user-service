@@ -7,7 +7,7 @@ import com.bytmasoft.dss.dto.PermissionUpdateDto;
 import com.bytmasoft.dss.dto.RoleCreateDto;
 import com.bytmasoft.dss.entities.Permission;
 import com.bytmasoft.dss.entities.Role;
-import com.bytmasoft.dss.mapper.AuthorityMapper;
+import com.bytmasoft.dss.mapper.PermissionMapper;
 import com.bytmasoft.dss.mapper.RoleMapper;
 import com.bytmasoft.dss.repository.PermissionRepository;
 import com.bytmasoft.dss.repository.PermissionSpecification;
@@ -25,21 +25,22 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class AuthorityServiceImpl implements AuthorityService {
+public class PermissionServiceImpl implements PermissionService {
 
 
-    private final PermissionRepository authorityRepository;
-    private final AuthorityMapper authorityMapper;
+    private final PermissionRepository permissionRepository;
+    private final PermissionMapper permissionMapper;
     private final RoleMapper roleMapper;
     private final RoleServiceImpl roleService;
     private final AuthUtils authUtils;
 
     @Override
-    public PermissionDto add(PermissionCreateDto groupCreateDto) {
-        Permission authority = authorityMapper.dtoCreateToEntity(groupCreateDto);
-        authority.setName(authority.getName().toUpperCase());
-        Permission savedUser = authorityRepository.save(authority);
-        return authorityMapper.entityToDto(savedUser);
+    public PermissionDto add(PermissionCreateDto permissionCreateDto) {
+        Permission permission = permissionMapper.dtoCreateToEntity(permissionCreateDto);
+        permission.setName(permission.getName().toUpperCase());
+        permission.setAddedBy(authUtils.getUsername());
+        Permission savedUser = permissionRepository.save(permission);
+        return permissionMapper.toPermissionDto(savedUser);
     }
 
     @Override
@@ -48,85 +49,79 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
 
-
-/*    @Override
-    public Page<AuthorityDto> findAll(Pageable pageable) {
-        return authorityRepository.findAll(pageable).map(authorityMapper::entityToDto);
-    }*/
-
     @Override
     public Page<PermissionDto> findAllByActiveStatus(boolean active, Pageable pageable) {
-        return authorityRepository.findAll(PermissionSpecification.hasActive(active), pageable).map(authorityMapper::entityToDto);
+        return permissionRepository.findAll(PermissionSpecification.hasActive(active), pageable).map(permissionMapper::toPermissionDto);
 
     }
 
     @Override
     public List<PermissionDto> findAllAsList() {
-        return authorityRepository.findAll().stream().map(authorityMapper::entityToDto).collect(Collectors.toList());
+        return permissionRepository.findAll().stream().map(permissionMapper::toPermissionDto).collect(Collectors.toList());
 
     }
 
     @Override
     public PermissionDto findById(Long id) throws DSSEntityNotFoundException {
-        return authorityMapper.entityToDto(findAuthorityById(id));
+        return permissionMapper.toPermissionDto(findAuthorityById(id));
     }
 
     private Permission findAuthorityById(Long id) throws DSSEntityNotFoundException {
-        return authorityRepository.findById(id).orElseThrow(()-> new DSSEntityNotFoundException("Group with id: "+id+" not found"));
+        return permissionRepository.findById(id).orElseThrow(()-> new DSSEntityNotFoundException("Group with id: "+id+" not found"));
 
     }
 
     @Override
     public PermissionDto update(Long id, PermissionUpdateDto groupUpdateDto) {
-        Permission groupToUpdate = authorityMapper.dtoToEntity(findById(id));
+        Permission groupToUpdate = permissionMapper.toPermission(findById(id));
 
-        Permission roleToSave = authorityMapper.partialUpdate(groupUpdateDto, groupToUpdate);
-        return authorityMapper.entityToDto(authorityRepository.save(roleToSave));
+        Permission roleToSave = permissionMapper.partialUpdate(groupUpdateDto, groupToUpdate);
+        return permissionMapper.toPermissionDto(permissionRepository.save(roleToSave));
     }
 
     //TODO not delete the element only update the field is_for_delete = true
     @Override
     public PermissionDto delete(Long id) {
-        Permission groupToDelete = authorityMapper.dtoToEntity(findById(id));
-        authorityRepository.delete(groupToDelete);
-        return authorityMapper.entityToDto(groupToDelete);
+        Permission groupToDelete = permissionMapper.toPermission(findById(id));
+        permissionRepository.delete(groupToDelete);
+        return permissionMapper.toPermissionDto(groupToDelete);
     }
 
     @Override
-    public PermissionDto addAutorityToRole(Long groupId, Long roleId) {
-        Permission authority = authorityMapper.dtoToEntity(findById(groupId));
-        Role role = roleMapper.dtoToEntity(roleService.findById(roleId));
+    public PermissionDto addPermissionToRole(Long groupId, Long roleId) {
+        Permission authority = permissionMapper.toPermission(findById(groupId));
+        Role role = roleMapper.toRole(roleService.findById(roleId));
 //        authority.getRoles().add(role);
 
-       return authorityMapper.entityToDto(authorityRepository.save(authority));
+       return permissionMapper.toPermissionDto(permissionRepository.save(authority));
 
     }
 
     @Override
-    public PermissionDto addAutorityToRole(Long groupId, RoleCreateDto roleCreateDto) {
-        Permission authority = authorityMapper.dtoToEntity(findById(groupId));
-        Role role = roleMapper.dtoToEntity(roleService.add(roleCreateDto));
+    public PermissionDto addPermissionToRole(Long groupId, RoleCreateDto roleCreateDto) {
+        Permission authority = permissionMapper.toPermission(findById(groupId));
+        Role role = roleMapper.toRole(roleService.add(roleCreateDto));
 
 //        authority.getRoles().add(role);
 
-        return authorityMapper.entityToDto(authorityRepository.save(authority));
+        return permissionMapper.toPermissionDto(permissionRepository.save(authority));
     }
 
     @Override
     public Long countActiveAuthorities() {
         Specification<Permission> spec = PermissionSpecification.hasActive(true);
-        return authorityRepository.count(spec);
+        return permissionRepository.count(spec);
     }
 
     @Override
-    public Long countAuthorities() {
-        return authorityRepository.count();
+    public Long countPermissions() {
+        return permissionRepository.count();
     }
 
     @Override
     public Long countLockedAuthorities() {
         Specification<Permission> spec = PermissionSpecification.hasActive(false);
-        return authorityRepository.count(spec);
+        return permissionRepository.count(spec);
     }
 
     @Override
@@ -134,7 +129,7 @@ public class AuthorityServiceImpl implements AuthorityService {
         Permission authority = findAuthorityById(id);
         authority.setIsActive(true);
         authority.setModifiedBy(authUtils.getUsername());
-        return authorityMapper.entityToDto(authorityRepository.save(authority));
+        return permissionMapper.toPermissionDto(permissionRepository.save(authority));
     }
 
     @Override
@@ -142,7 +137,7 @@ public class AuthorityServiceImpl implements AuthorityService {
         Permission authority = findAuthorityById(id);
         authority.setIsActive(false);
         authority.setModifiedBy(authUtils.getUsername());
-        return authorityMapper.entityToDto(authorityRepository.save(authority));
+        return permissionMapper.toPermissionDto(permissionRepository.save(authority));
 
     }
 
@@ -151,17 +146,17 @@ public class AuthorityServiceImpl implements AuthorityService {
         Permission authority = findAuthorityById(id);
          authority.setDeleted(false);
          authority.setModifiedBy(authUtils.getUsername());
-         return authorityMapper.entityToDto(authorityRepository.save(authority));
+         return permissionMapper.toPermissionDto(permissionRepository.save(authority));
     }
 
     @Override
     public Long countAllActives() {
-        return authorityRepository.count(PermissionSpecification.hasActive(true));
+        return permissionRepository.count(PermissionSpecification.hasActive(true));
     }
 
     @Override
     public Long countAllLocked() {
-        return authorityRepository.count(PermissionSpecification.hasActive(false));
+        return permissionRepository.count(PermissionSpecification.hasActive(false));
     }
 
 

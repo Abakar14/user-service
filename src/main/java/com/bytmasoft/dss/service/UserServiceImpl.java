@@ -22,7 +22,9 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,12 +48,12 @@ private final RoleService roleService;
         Role role  = roleRepository.findById(roleId).orElseThrow(()-> new DSSEntityNotFoundException("Role with id: "+roleId+" not found"));
         user.setRole(role);
 
-        return userMapper.entityToDto(userRepository.save(user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public UserDto findByUsername(String username) {
-        return userRepository.findByUsername(username).map(userMapper::entityToDto).orElseThrow(()-> new DSSEntityNotFoundException("User with username :"+username + " not found"))    ;
+        return userRepository.findByUsername(username).map(userMapper::toUserDto).orElseThrow(()-> new DSSEntityNotFoundException("User with username :"+username + " not found"))    ;
     }
 
     @Override
@@ -81,7 +83,7 @@ private final RoleService roleService;
         User user = findUserById(id);
 
         user.setModifiedBy(authUtils.getUsername());
-        return userMapper.entityToDto(userRepository.save(user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
@@ -89,45 +91,44 @@ private final RoleService roleService;
         User user = findUserById(id);
         user.setDeleted(true);
         user.setModifiedBy(authUtils.getUsername());
-        return userMapper.entityToDto(userRepository.save(user));
+        return userMapper.toUserDto(userRepository.save(user));
 
     }
 
     @Override
     public UserDto add(UserCreateDto userCreateDto) {
-        System.out.println(" user1 "+userCreateDto.toString());
-        Role role = roleRepository.findById(1L).orElseThrow(()-> new DSSEntityNotFoundException("Role with id: "+1L + " not found"));
         User user = userMapper.dtoCreateToEntity(userCreateDto);
         user.setAddedBy(authUtils.getUsername());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(role);
+        user.setRole(roleRepository.findById(userCreateDto.getRoleId()).orElseThrow(()-> new DSSEntityNotFoundException("Role with id: "+1L + " not found")));
+
         User savedUser = userRepository.save(user);
-        return userMapper.entityToDto(savedUser);
+        return userMapper.toUserDto(savedUser);
     }
 
     @Override
     public PagedModel<EntityModel<UserDto>> findAll(Pageable pageable) {
         Page<User> userPage = userRepository.findAll(pageable);
-        Page<UserDto> dtos = userPage.map(userMapper::entityToDto);
+        Page<UserDto> dtos = userPage.map(userMapper::toUserDto);
         return pagedResourcesAssembler.toModel(dtos);
     }
 
 
     @Override
     public Page<UserDto> findAllByActiveStatus(boolean active, Pageable pageable) {
-        return userRepository.findAll(UserSpecification.hasActive(active), pageable).map(userMapper::entityToDto);
+        return userRepository.findAll(UserSpecification.hasActive(active), pageable).map(userMapper::toUserDto);
 
 
     }
 
     @Override
     public List<UserDto> findAllAsList() {
-        return userRepository.findAll().stream().map(userMapper::entityToDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(userMapper::toUserDto).collect(Collectors.toList());
     }
 
     @Override
     public UserDto findById(Long id) throws DSSEntityNotFoundException {
-    return userMapper.entityToDto(findUserById(id));
+    return userMapper.toUserDto(findUserById(id));
     }
 
     private User findUserById(Long id) {
@@ -136,18 +137,37 @@ private final RoleService roleService;
 
     @Override
     public UserDto update(Long id, UserUpdateDto userUpdateDto) {
-        User userToUpdate = userMapper.dtoToEntity(findById(id));
-
+        User userToUpdate = findUserById(id);
 
         User userToSave = userMapper.partialUpdate(userUpdateDto, userToUpdate);
-        return userMapper.entityToDto(userRepository.save(userToSave));
+        userToSave.setModifiedBy(authUtils.getUsername());
+        return userMapper.toUserDto(userRepository.save(userToSave));
     }
 
     //TODO not delete the element only update the field is_for_delete = true
     @Override
     public UserDto delete(Long id) {
-        User userToDelete = userMapper.dtoToEntity(findById(id));
+        User userToDelete = userMapper.toUser(findById(id));
         userRepository.delete(userToDelete);
-        return userMapper.entityToDto(userToDelete);
+        return userMapper.toUserDto(userToDelete);
     }
+
+public void processForgotPassword(String email) {
+   /* User user = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("User with email not found"));
+
+    // Generate a password reset token
+    String token = UUID.randomUUID().toString();
+    PasswordResetToken resetToken = PasswordResetToken.builder()
+                                            .token(token)
+                                            .user(user)
+                                            .expiryDate(LocalDateTime.now().plusHours(1))
+                                            .build();
+
+    tokenRepository.save(resetToken);
+
+    // Send email with reset link
+    String resetLink = "http://your-app-domain/reset-password?token=" + token;
+    emailService.sendPasswordResetEmail(user.getEmail(), resetLink);*/
+}
 }

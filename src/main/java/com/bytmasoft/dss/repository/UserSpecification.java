@@ -7,7 +7,7 @@ public class UserSpecification {
 
     public static Specification<User> hasActive(boolean active) {
         return (root, query, cb) -> {
-            return   cb.equal(root.get("active"), active);
+            return   cb.equal(root.get("isActive"), active);
         };
     }
 }

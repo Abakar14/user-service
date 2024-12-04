@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 @RequiredArgsConstructor
 @Component
@@ -31,27 +32,26 @@ private final RoleMapper roleMapper;
 @Override
     public void run(String... args) throws Exception {
         if(appPropertiesConfig.getInitData().isInitialize()){
-            Role role = null;
+
             if(roleService.count() == 0){
-                RoleCreateDto roleCreateDto = RoleCreateDto.builder()
-                                                      .name("SYSTEM_ADMIN")
-                                                      .description("System Administrator")
-                                                      .build();
+                this.getRoles().forEach(roleCreateDto -> {
+                    roleService.add(roleCreateDto);
 
+                });
 
-
-
-              role = roleMapper.dtoToEntity(roleService.add(roleCreateDto));
 
             }
 
             if(userService.countAllUsers() == 0){
+
+               RoleDto roleDto = roleService.findRoleByName("ROLE_SYSTEM_ADMIN");
+
                 userService.add(UserCreateDto.builder()
                         .firstname("Mahamat")
                         .lastname("Abakar")
                         .username("abakar")
                                         .schoolId(1L)
-                                        .role(role)
+                                        .roleId(roleDto.getId())
                         .email("abakar@gmail.com")
                                 .gender(Gender.MALE)
                         .password("Aba14mah?")
@@ -70,4 +70,26 @@ private final RoleMapper roleMapper;
             }
         }
     }
+
+    List<RoleCreateDto>getRoles(){
+    List<RoleCreateDto> roles = new ArrayList<>();
+
+        RoleCreateDto roleCreateDto = RoleCreateDto.builder()
+                                              .name("SYSTEM_ADMIN")
+                                              .description("Manage the entries platform(System settings, user accounts, role and permission)")
+                                              .build();
+        roles.add(roleCreateDto);
+
+
+        RoleCreateDto roleCreateDto1 = RoleCreateDto.builder()
+                                              .name("SCHOOL_ADMIN")
+                                              .description("Overview day to day school operations.\n" +
+                                                                   " Manage student and teacher data.\n" +
+                                                                   "Handle fee and financial records.    \n")
+                                              .build();
+        roles.add(roleCreateDto1);
+
+    return roles;
+}
+
 }

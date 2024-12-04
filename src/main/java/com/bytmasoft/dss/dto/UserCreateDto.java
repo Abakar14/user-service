@@ -3,10 +3,14 @@ package com.bytmasoft.dss.dto;
 
 import com.bytmasoft.dss.entities.Role;
 import com.bytmasoft.dss.enums.Gender;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -14,14 +18,31 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserCreateDto {
 
-private Gender gender;
-private Long schoolId;
+@NotNull
+@Size(min = 3, max = 50)
 private String firstname;
+
+@NotNull
+@Size(min = 3, max = 50)
 private String lastname;
+
+@NotNull
+@Size(min = 3, max = 50)
 private String username;
-private String email;
+
+@NotNull
+@Size(min = 6, max = 50)
 private String password;
-private Role role;
 
+private String email;
 
+@NotNull
+private Gender gender;
+
+@NotNull
+private Long schoolId;
+
+private Long roleId;
+
+//private boolean deleted;
 }
