@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.bytmasoft'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0'
 
 java {
     toolchain {
@@ -35,6 +35,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
+    //implementation "org.flywaydb:flyway-core:${flywayVersion}"
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation "com.bytmasoft:dss-common:${commonVersion}"

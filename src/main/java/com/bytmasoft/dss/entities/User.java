@@ -22,8 +22,6 @@ import java.sql.Timestamp;
 @Table(name = "users")
 public class User extends BaseEntity implements Serializable {
 
-
-
     @Column(nullable = false)
     private Long schoolId;
 

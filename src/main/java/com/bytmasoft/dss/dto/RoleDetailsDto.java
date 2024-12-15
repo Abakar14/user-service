@@ -21,7 +21,7 @@ private Long id;
 private String name;
 private String description;
 private Set<Role> childRoles;
-private Long parentRoleId;
+private Role parentRole;
 private Set<Permission> permissions;
 private boolean deleted;
 private Boolean isActive;

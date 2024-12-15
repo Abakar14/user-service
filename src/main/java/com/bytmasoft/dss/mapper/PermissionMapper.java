@@ -27,9 +27,17 @@ public interface PermissionMapper {
 
     List<Permission> toPermissionList(List<PermissionDto> permissionDtos);
 
+@Mapping(target = "roles", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     Permission dtoCreateToEntity(PermissionCreateDto permissionCreateDto);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "isActive", ignore = true)
+    @Mapping(target = "addedOn", ignore = true)
+    @Mapping(target = "modifiedOn", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "addedBy", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Permission partialUpdate(PermissionUpdateDto updateDto, @MappingTarget Permission permission);
 }

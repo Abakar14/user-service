@@ -1,21 +1,21 @@
 package com.bytmasoft.dss.config;
 
-import com.bytmasoft.dss.dto.RoleCreateDto;
-import com.bytmasoft.dss.dto.RoleDto;
-import com.bytmasoft.dss.dto.UserCreateDto;
-import com.bytmasoft.dss.dto.UserDto;
-import com.bytmasoft.dss.entities.Role;
+import com.bytmasoft.dss.dto.*;
 import com.bytmasoft.dss.enums.Gender;
+import com.bytmasoft.dss.mapper.PermissionMapper;
 import com.bytmasoft.dss.mapper.RoleMapper;
 import com.bytmasoft.dss.repository.RoleRepository;
-import com.bytmasoft.dss.service.RoleServiceImpl;
-import com.bytmasoft.dss.service.UserServiceImpl;
+import com.bytmasoft.dss.service.PermissionService;
+import com.bytmasoft.dss.service.RoleService;
+import com.bytmasoft.dss.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -23,10 +23,9 @@ public class DataInitializer implements CommandLineRunner {
 
     private final AppPropertiesConfig appPropertiesConfig;
 
-    private final UserServiceImpl userService;
-    private final RoleServiceImpl roleService;
-private final RoleRepository roleRepository;
-private final RoleMapper roleMapper;
+    private final UserService userService;
+    private final RoleService roleService;
+private final PermissionService permissionService;
 
 
 @Override
@@ -39,6 +38,17 @@ private final RoleMapper roleMapper;
 
                 });
 
+                if(permissionService.countPermissions() == 0){
+                    this.getPermissions().forEach(permissionCreateDto -> {
+                        permissionService.add(permissionCreateDto);
+
+                    });
+                }
+
+                RoleDto roleDto = roleService.findRoleByName("ROLE_SYSTEM_ADMIN");
+
+                List<PermissionDto> permissions = permissionService.findAllAsList();
+                roleService.addPermissionsToRole(roleDto.getId(), permissions.stream().map(PermissionDto::getId).collect(Collectors.toList()));
 
             }
 
@@ -50,20 +60,14 @@ private final RoleMapper roleMapper;
                         .firstname("Mahamat")
                         .lastname("Abakar")
                         .username("abakar")
-                                        .schoolId(1L)
-                                        .roleId(roleDto.getId())
+                        .schoolId(1L)
+                        .roleId(roleDto.getId())
                         .email("abakar@gmail.com")
-                                .gender(Gender.MALE)
+                        .gender(Gender.MALE)
                         .password("Aba14mah?")
                         .build());
 
-
-
-                List<UserDto> usersDto =  userService.findAllAsList();
-                List<RoleDto> roles =  roleService.findAllAsList();
-                //userService.addRoleToUser(usersDto.get(0).getId(), roles.get(0).getId());
-
-                System.out.println("Initial data created successfully");
+                   System.out.println("Initial data created successfully");
 
             }else {
                 System.out.println("Data initialization flag is false, skipping initialization");
@@ -71,6 +75,36 @@ private final RoleMapper roleMapper;
         }
     }
 
+    List<PermissionCreateDto>getPermissions(){
+        List<PermissionCreateDto> permissions = new ArrayList<>();
+        PermissionCreateDto permissionCreateDto = PermissionCreateDto.builder()
+                                                          .name("MANAGE_USERS")
+                                                          .description("Create and assign roles to users")
+                                                          .build();
+
+        permissions.add(permissionCreateDto);
+
+        PermissionCreateDto permissionCreateDto1 = PermissionCreateDto.builder()
+                                                          .name("VIEW_USERS")
+                                                          .description("Read all users")
+                                                          .build();
+        permissions.add(permissionCreateDto1);
+
+        PermissionCreateDto permissionCreateDto2 = PermissionCreateDto.builder()
+                                                           .name("MANAGE_STUDENTS")
+                                                           .description("Create, update, delete students")
+                                                           .build();
+        permissions.add(permissionCreateDto2);
+
+        PermissionCreateDto permissionCreateDto3 = PermissionCreateDto.builder()
+                                                           .name("VIEW_STUDENTS")
+                                                           .description("Show students")
+                                                           .build();
+        permissions.add(permissionCreateDto3);
+
+        return permissions;
+
+    }
     List<RoleCreateDto>getRoles(){
     List<RoleCreateDto> roles = new ArrayList<>();
 

@@ -6,8 +6,8 @@ import com.bytmasoft.dss.dto.UserCreateDto;
 import com.bytmasoft.dss.dto.UserDto;
 import com.bytmasoft.dss.dto.UserUpdateDto;
 import com.bytmasoft.dss.entities.ForgotPasswordRequest;
-import com.bytmasoft.dss.service.PermissionServiceImpl;
-import com.bytmasoft.dss.service.UserServiceImpl;
+import com.bytmasoft.dss.service.PermissionService;
+import com.bytmasoft.dss.service.UserService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,8 +31,8 @@ import java.util.List;
 @RestController
 public class UserController implements DSSCrud<UserDto, UserCreateDto, UserUpdateDto> {
 
-private final UserServiceImpl userService;
-private final PermissionServiceImpl authorityServiceImpl;
+private final UserService userService;
+private final PermissionService authorityServiceImpl;
 
 @PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
 @Override

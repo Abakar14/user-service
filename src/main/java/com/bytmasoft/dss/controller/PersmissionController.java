@@ -5,7 +5,7 @@ import com.bytmasoft.common.exception.DSSEntityNotFoundException;
 import com.bytmasoft.dss.dto.PermissionCreateDto;
 import com.bytmasoft.dss.dto.PermissionDto;
 import com.bytmasoft.dss.dto.PermissionUpdateDto;
-import com.bytmasoft.dss.service.PermissionServiceImpl;
+import com.bytmasoft.dss.service.PermissionService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 public class PersmissionController implements DSSCrud<PermissionDto, PermissionCreateDto, PermissionUpdateDto> {
 
-private final PermissionServiceImpl permissionService;
+private final PermissionService permissionService;
 
 @PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
 @Override

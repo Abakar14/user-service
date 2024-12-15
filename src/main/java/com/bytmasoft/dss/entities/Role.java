@@ -21,7 +21,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "roles")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Role extends BaseEntity implements Serializable {
 
 

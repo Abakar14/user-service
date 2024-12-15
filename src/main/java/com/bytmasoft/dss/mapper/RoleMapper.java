@@ -1,10 +1,7 @@
 package com.bytmasoft.dss.mapper;
 
 import com.bytmasoft.common.entities.BaseEntity;
-import com.bytmasoft.dss.dto.RoleCreateDto;
-import com.bytmasoft.dss.dto.RoleDetailsDto;
-import com.bytmasoft.dss.dto.RoleDto;
-import com.bytmasoft.dss.dto.RoleUpdateDto;
+import com.bytmasoft.dss.dto.*;
 import com.bytmasoft.dss.entities.Permission;
 import com.bytmasoft.dss.entities.Role;
 import org.mapstruct.*;
@@ -22,7 +19,6 @@ public interface RoleMapper {
 @Mapping(target = "parentRoleId", source = "parentRole.id")
 @Mapping(target = "permissionIds", source = "permissions", qualifiedByName = "mapToIds")
 RoleDto toRoleDto(Role role);
-
 // Mapping RoleDto -> Role
 @Mapping(target = "childRoles", ignore = true) // You can handle this later
 @Mapping(target = "parentRole", ignore = true) // Optional for now
@@ -35,8 +31,23 @@ List<Role> toRoles(List<RoleDto> roleDtos);
 
 RoleDetailsDto toRoleDetails(Role role);
 
+@Mapping(target = "childRoles", ignore = true) // You can handle this later
+@Mapping(target = "parentRole", ignore = true)
+@Mapping(target = "permissions", ignore = true)
+@Mapping(target = "deleted", ignore = true)
 Role dtoCreateToEntity(RoleCreateDto roleCreateDto);
 
+
+@Mapping(target = "id", ignore = true)
+@Mapping(target = "isActive", ignore = true)
+@Mapping(target = "addedOn", ignore = true)
+@Mapping(target = "modifiedOn", ignore = true)
+@Mapping(target = "addedBy", ignore = true)
+@Mapping(target = "modifiedBy", ignore = true)
+@Mapping(target = "childRoles", ignore = true)
+@Mapping(target = "parentRole", ignore = true)
+@Mapping(target = "deleted", ignore = true)
+@Mapping(target = "permissions", ignore = true)
 @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 Role partialUpdate(RoleUpdateDto updateDto, @MappingTarget Role role);
 

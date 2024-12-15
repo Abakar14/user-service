@@ -7,14 +7,11 @@ import com.bytmasoft.dss.dto.RoleDetailsDto;
 import com.bytmasoft.dss.dto.RoleDto;
 import com.bytmasoft.dss.dto.RoleUpdateDto;
 import com.bytmasoft.dss.repository.RoleRepository;
-import com.bytmasoft.dss.service.RoleServiceImpl;
+import com.bytmasoft.dss.service.RoleService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +29,7 @@ import java.util.List;
 @RestController
 public class RoleController implements DSSCrud<RoleDto, RoleCreateDto, RoleUpdateDto> {
 
-private final RoleServiceImpl roleService;
+private final RoleService roleService;
 private final RoleRepository roleRepository;
 
 @PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
@@ -46,6 +43,15 @@ public ResponseEntity<RoleDto> save(@Valid RoleCreateDto roleCreateDto) {
 public List<RoleDto> findList() {
 	return roleService.findAllAsList();
 }
+
+
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@GetMapping({"/details"})
+public List<RoleDetailsDto> findDetailsRoles() {
+	return roleService.findDetailsRoles();
+}
+
+
 
 @PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
 @Override
@@ -74,7 +80,13 @@ public ResponseEntity<RoleDto> delete(Long id) throws DSSEntityNotFoundException
 @PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
 @PostMapping("{role_id}/permissions/{permission_id}")
 ResponseEntity<RoleDto> addPermissionToRole(@PathVariable Long role_id , @PathVariable Long permission_id){
-	return ResponseEntity.ok(roleService.addAuthorityToRole(role_id, permission_id));
+	return ResponseEntity.ok(roleService.addPermissionToRole(role_id, permission_id));
+}
+
+@PreAuthorize("hasAnyAuthority('MANAGE_USERS')")
+@PostMapping("{role_id}/permissions")
+ResponseEntity<RoleDto> addPermissionToRole(@PathVariable Long role_id , @RequestParam List<Long> permissionIds){
+	return ResponseEntity.ok(roleService.addPermissionsToRole(role_id, permissionIds));
 }
 
 

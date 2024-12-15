@@ -21,6 +21,13 @@ spring:
       enabled: true
   main:
     allow-bean-definition-overriding: true
+#  flyway:
+#    enabled: true
+#    locations: classpath:db/migration
+#    schemas:
+#    url: jdbc:postgresql://localhost:5432/auth_service_db
+#    username: postgres
+#    password: Aba14mah?
 # other common properties
 server:
   port: 8088
