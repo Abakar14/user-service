@@ -1,16 +1,12 @@
 package com.bytmasoft.dss.entities;
 
 import com.bytmasoft.common.entities.BaseEntity;
-import com.bytmasoft.dss.enums.Gender;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.bytmasoft.common.enums.Gender;
+import com.bytmasoft.common.enums.GenderConverter;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 
 @Getter
@@ -29,7 +25,7 @@ public class User extends BaseEntity implements Serializable {
     private String lastname;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = GenderConverter.class)
     private Gender gender;
 
     @Column(unique = true, nullable = false)

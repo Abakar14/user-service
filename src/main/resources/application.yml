@@ -46,7 +46,8 @@ logging:
 # Secret key
 jwt:
   secret:
-    key: 8KvVu4Bn2KwBNX1MdnXY6VaRVLekVxurk3aaJxnzdCuZL6AHEL0EnnAOYLZtHWUr
+    key: 9268ebe74adbee948f3103811a79d35418f77f1293ab21d915d8eb38a6cf03f673bcdc5642be35d23a2d8361093c6c6c990d3647a11be4d3e1cf8e1ca9ab557f
+
   access:
     token:
       expiration: 60000 #1800000 # 30 min in milliseconds for token expiration time

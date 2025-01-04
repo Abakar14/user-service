@@ -1,10 +1,7 @@
 package com.bytmasoft.dss.config;
 
+import com.bytmasoft.common.enums.Gender;
 import com.bytmasoft.dss.dto.*;
-import com.bytmasoft.dss.enums.Gender;
-import com.bytmasoft.dss.mapper.PermissionMapper;
-import com.bytmasoft.dss.mapper.RoleMapper;
-import com.bytmasoft.dss.repository.RoleRepository;
 import com.bytmasoft.dss.service.PermissionService;
 import com.bytmasoft.dss.service.RoleService;
 import com.bytmasoft.dss.service.UserService;

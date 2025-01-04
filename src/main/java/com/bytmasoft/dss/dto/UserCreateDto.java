@@ -1,16 +1,13 @@
 package com.bytmasoft.dss.dto;
 
 
-import com.bytmasoft.dss.entities.Role;
-import com.bytmasoft.dss.enums.Gender;
+import com.bytmasoft.common.enums.Gender;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Data
 @NoArgsConstructor

@@ -1,19 +1,12 @@
 package com.bytmasoft.dss.dto;
 
 
+import com.bytmasoft.common.enums.Gender;
 import com.bytmasoft.dss.entities.Role;
-import com.bytmasoft.dss.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Set;
-
 
 
 @Data
@@ -28,7 +21,7 @@ private String lastname;
 private String username;
 private String email;
 private String password;
-private Gender gender;
+private String gender;
 private Role role;
 private Boolean isActive;
 @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
